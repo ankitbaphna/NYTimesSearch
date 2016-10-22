@@ -1,4 +1,4 @@
-package assignment2.bootcamp.com.nytimessearch.activity;
+package assignment2.bootcamp.com.nytimessearch.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
