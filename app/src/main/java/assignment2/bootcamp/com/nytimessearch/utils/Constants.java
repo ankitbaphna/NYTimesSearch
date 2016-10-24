@@ -14,4 +14,9 @@ public class Constants {
 
     public static final String ARTICLE_URL = "article_url";
 
+    public static final String ORDER = "order";
+    public static final String DATE = "date";
+    public static final String CHECKBOX_ARTS = "arts";
+    public static final String CHECKBOX_FASHION = "fashion";
+    public static final String CHECKBOX_SPORTS = "sports";
 }
