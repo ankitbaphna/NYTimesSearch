@@ -4,4 +4,10 @@
     <string name="arts">Arts</string>
     <string name="sports">Sports</string>
     <string name="fashion_amp_style"><![CDATA[Fashion & Style]]></string>
+    <string name="msg_begin_date">Begin Date</string>
+    <string name="msg_sort_order">Sort order</string>
+    <string name="msg_news_deck_nvalues">News Deck \nvalues</string>
+    <string name="btn_save">Save</string>
+    <string name="msg_no_internet">Please connect to internet first</string>
+    <string name="msg_no_results">No results</string>
 </resources>

@@ -5,4 +5,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
+    <dimen name="filter_text_margin">16dp</dimen>
+    <dimen name="image_view_height">125dp</dimen>
+    <dimen name="title_padding">4dp</dimen>
 </resources>

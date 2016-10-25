@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -45,8 +44,6 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
     RecyclerView rvList;
     private StaggeredGridLayoutManager staggeredLayoutManager;
 
-    @BindView(R.id.swipeContainer)
-    SwipeRefreshLayout swipeContainer;
     private ArticleItemsAdapter articleItemsAdapter;
     private SearchView searchView;
 
@@ -54,6 +51,7 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
     private SelectedFilters savedFilters;
     private EndlessRecyclerViewScrollListener scrollListener;
     private List<Doc> articleItems = new ArrayList<>();
+    private int currentPage = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +63,6 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                
-                refreshData(0);
-            }
-        });
         staggeredLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvList.setLayoutManager(staggeredLayoutManager);
 
@@ -101,7 +92,7 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
                 savedQuery = query;
                 articleItems.clear();
                 scrollListener.resetState();
-                
+
                 refreshData(0);
                 searchView.clearFocus();
                 return true;
@@ -120,7 +111,7 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
      * @param page
      */
     public void refreshData(final int page){
-        Log.d("Ankit", "page number " + page);
+        Log.d(Constants.TAG, "page number " + page);
         if(isNetworkAvailable()) {
             Log.d(Constants.TAG, "Searching for " + savedQuery);
             Retrofit retrofit = new Retrofit.Builder()
@@ -163,11 +154,12 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
             Call<ArticleItem> call = nytSearchApi.getSearchedArticles(searchData);
             call.enqueue(SearchActivity.this);
         }else {
-            Toast.makeText(getApplicationContext(), "Please connect to internet first", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.msg_no_internet, Toast.LENGTH_LONG).show();
         }
     }
 
     private void loadMoreData(int page) {
+        currentPage = page;
         refreshData(page);
     }
 
@@ -193,11 +185,11 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
             Log.d(Constants.TAG, "Response size " + resultToShow.size());
             articleItems.addAll(resultToShow);
             articleItemsAdapter.notifyDataSetChanged();
-            if(resultToShow.size() == 0){
-                Toast.makeText(getApplicationContext(), "No results", Toast.LENGTH_LONG).show();
+            if(resultToShow.size() == 0  && currentPage == 0) {
+                Toast.makeText(getApplicationContext(), R.string.msg_no_results, Toast.LENGTH_LONG).show();
             }
-        } else {
-            Toast.makeText(getApplicationContext(), "No results", Toast.LENGTH_LONG).show();
+        } else if( currentPage == 0) {
+            Toast.makeText(getApplicationContext(), R.string.msg_no_results, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -210,7 +202,6 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
     public void onFilterSelectedListener(SelectedFilters selectedFilters) {
         savedFilters = selectedFilters;
         scrollListener.resetState();
-        
         articleItems.clear();
         refreshData(0);
     }

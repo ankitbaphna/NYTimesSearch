@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp">
+    android:padding="@dimen/filter_text_margin">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,10 +11,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Begin Date"
-            android:textColor="#999696"
+            android:text="@string/msg_begin_date"
+            android:textColor="@color/colorLightGrey"
             android:gravity="center"
-            android:layout_marginRight="16dp"/>
+            android:layout_marginRight="@dimen/filter_text_margin"
+            android:layout_marginEnd="@dimen/filter_text_margin"/>
         <EditText
             android:id="@+id/etDatePicker"
             android:layout_width="match_parent"
@@ -28,10 +29,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sort order"
-            android:textColor="#999696"
+            android:text="@string/msg_sort_order"
+            android:textColor="@color/colorLightGrey"
             android:gravity="center"
-            android:layout_marginRight="16dp"/>
+            android:layout_marginRight="@dimen/filter_text_margin"
+            android:layout_marginEnd="@dimen/filter_text_margin"/>
 
         <Spinner
             android:id="@+id/spinnerSortOrder"
@@ -49,21 +51,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#999696"
-            android:text="News Deck \nvalues"
-            android:layout_marginRight="16dp"/>
+            android:text="@string/msg_news_deck_nvalues"
+            android:layout_marginRight="@dimen/filter_text_margin"
+            android:layout_marginEnd="@dimen/filter_text_margin"/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <CheckBox android:id="@+id/checkbox_arts"
+            <CheckBox android:id="@+id/checkboxArts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/arts" />
-            <CheckBox android:id="@+id/checkbox_fashion"
+            <CheckBox android:id="@+id/checkboxFashion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/fashion_amp_style" />
-            <CheckBox android:id="@+id/checkbox_sports"
+            <CheckBox android:id="@+id/checkboxSports"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sports" />
@@ -72,7 +75,7 @@
 
     <Button
         android:layout_margin="8dp"
-        android:text="Save"
+        android:text="@string/btn_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btnSave"

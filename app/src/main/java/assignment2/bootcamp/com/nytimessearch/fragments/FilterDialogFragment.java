@@ -31,13 +31,13 @@ public class FilterDialogFragment extends DialogFragment
     @BindView(R.id.etDatePicker)
     TextView textDatePicker;
 
-    @BindView(R.id.checkbox_arts)
+    @BindView(R.id.checkboxArts)
     CheckBox checkBoxArts;
 
-    @BindView(R.id.checkbox_fashion)
+    @BindView(R.id.checkboxFashion)
     CheckBox checkBoxFashion;
 
-    @BindView(R.id.checkbox_sports)
+    @BindView(R.id.checkboxSports)
     CheckBox checkBoxSports;
 
     @BindView(R.id.btnSave)
@@ -57,30 +57,12 @@ public class FilterDialogFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_filter, container);
-
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        // Get field from view
-        //textDatePicker = (TextView) view.findViewById(R.id.textDatePicker);
-
-        /*textDatePicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(v);
-            }
-        });*/
-
-        // Fetch arguments from bundle and set title
-        //String title = getArguments().getString("title", "Enter Name");
-        //getDialog().setTitle(title);
-        // Show soft keyboard automatically and request focus to field
-        //textDatePicker.requestFocus();
-        //getDialog().getWindow().setSoftInputMode(
-                //WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     // attach to an onclick handler to show the date picker
@@ -102,7 +84,7 @@ public class FilterDialogFragment extends DialogFragment
             selectedBeginDate = textDatePicker.getText().toString().replace("-","");
         }
         SelectedFilters selectedFilters = new SelectedFilters(selectedBeginDate,
-                spinnerSortOrder.getSelectedItem().toString(),
+                spinnerSortOrder.getSelectedItem().toString().toLowerCase(),
                 checkBoxArts.isChecked(),
                 checkBoxFashion.isChecked(),
                 checkBoxSports.isChecked());
@@ -119,9 +101,18 @@ public class FilterDialogFragment extends DialogFragment
         // store the values selected into a Calendar instance
         final Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, monthOfYear);
+        c.set(Calendar.MONTH, monthOfYear + 1);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        textDatePicker.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
+
+        String month = Integer.toString(monthOfYear + 1);
+        if(monthOfYear < 9){
+            month = "0"+month;
+        }
+        String day = Integer.toString(dayOfMonth);
+        if(dayOfMonth <= 9){
+            day = "0"+day;
+        }
+        textDatePicker.setText(year + "-" + month + "-" + day);
     }
 
 }
