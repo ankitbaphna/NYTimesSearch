@@ -97,10 +97,11 @@ public class FilterDialogFragment extends DialogFragment
 
     @OnClick(R.id.btnSave)
     public void saveClicked(){
-        /*Map<String, String> filterSelection = new ArrayMap<>();
-        filterSelection.put(Constants.DATE, textDatePicker.getText().toString());
-        filterSelection.put(Constants.ORDER)*/
-        SelectedFilters selectedFilters = new SelectedFilters(textDatePicker.getText().toString(),
+        String selectedBeginDate =  "";
+        if(textDatePicker.getText() != null){
+            selectedBeginDate = textDatePicker.getText().toString().replace("-","");
+        }
+        SelectedFilters selectedFilters = new SelectedFilters(selectedBeginDate,
                 spinnerSortOrder.getSelectedItem().toString(),
                 checkBoxArts.isChecked(),
                 checkBoxFashion.isChecked(),

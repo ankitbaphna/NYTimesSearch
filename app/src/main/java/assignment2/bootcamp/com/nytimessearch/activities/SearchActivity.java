@@ -16,7 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import assignment2.bootcamp.com.nytimessearch.R;
@@ -24,8 +26,10 @@ import assignment2.bootcamp.com.nytimessearch.adapters.ArticleItemsAdapter;
 import assignment2.bootcamp.com.nytimessearch.fragments.FilterDialogFragment;
 import assignment2.bootcamp.com.nytimessearch.interfaces.NYTSearchApi;
 import assignment2.bootcamp.com.nytimessearch.models.ArticleItem;
+import assignment2.bootcamp.com.nytimessearch.models.Doc;
 import assignment2.bootcamp.com.nytimessearch.models.SelectedFilters;
 import assignment2.bootcamp.com.nytimessearch.utils.Constants;
+import assignment2.bootcamp.com.nytimessearch.utils.EndlessRecyclerViewScrollListener;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -48,6 +52,8 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
 
     private String savedQuery;
     private SelectedFilters savedFilters;
+    private EndlessRecyclerViewScrollListener scrollListener;
+    private List<Doc> articleItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +68,26 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshData();
+                
+                refreshData(0);
             }
         });
         staggeredLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvList.setLayoutManager(staggeredLayoutManager);
+
+        articleItemsAdapter = new ArticleItemsAdapter(this, articleItems);
+        rvList.setAdapter(articleItemsAdapter);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(staggeredLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                loadMoreData(page);
+            }
+        };
+        rvList.addOnScrollListener(scrollListener);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -79,7 +99,10 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
             @Override
             public boolean onQueryTextSubmit(String query) {
                 savedQuery = query;
-                refreshData();
+                articleItems.clear();
+                scrollListener.resetState();
+                
+                refreshData(0);
                 searchView.clearFocus();
                 return true;
             }
@@ -92,7 +115,12 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void refreshData(){
+    /**
+     * Get date from NYTimes for selected page with appropriate filters applied
+     * @param page
+     */
+    public void refreshData(final int page){
+        Log.d("Ankit", "page number " + page);
         if(isNetworkAvailable()) {
             Log.d(Constants.TAG, "Searching for " + savedQuery);
             Retrofit retrofit = new Retrofit.Builder()
@@ -104,12 +132,43 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
             Map<String, String> searchData = new HashMap<>();
             searchData.put("api-key", Constants.API_KEY);
             searchData.put("q", savedQuery);
-            //searchData.put(savedFilters.)
+            searchData.put("page", Integer.toString(page));
+            if(savedFilters != null) {
+                if(!savedFilters.getDate().equals("")) {
+                    searchData.put("begin_date", savedFilters.getDate());
+                }
+                if(!savedFilters.getSortOrder().equals("")) {
+                    searchData.put("sort", savedFilters.getSortOrder());
+                }
+
+                if(savedFilters.isArts() || savedFilters.isFashion() || savedFilters.isSports()) {
+                    StringBuilder builder = new StringBuilder("news_desk:(");
+                    if (savedFilters.isArts()) {
+                        builder.append("\"").append(getString(R.string.arts)).append("\"").append(",");
+                    }
+                    if (savedFilters.isFashion()) {
+                        builder.append("\"").append(getString(R.string.fashion_amp_style)).append("\"").append(",");
+                    }
+                    if (savedFilters.isSports()) {
+                        builder.append("\"").append(getString(R.string.sports)).append("\"").append(",");
+                    }
+
+                    builder.append(")");
+                    String newsDeskString = builder.toString().replace(" ","");
+                    searchData.put("fq", newsDeskString);
+                    Log.d(Constants.TAG, "Desk Filter is " + newsDeskString);
+                }
+
+            }
             Call<ArticleItem> call = nytSearchApi.getSearchedArticles(searchData);
             call.enqueue(SearchActivity.this);
         }else {
             Toast.makeText(getApplicationContext(), "Please connect to internet first", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void loadMoreData(int page) {
+        refreshData(page);
     }
 
     @Override
@@ -128,8 +187,18 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
     @Override
     public void onResponse(Call<ArticleItem> call, Response<ArticleItem> response) {
         Log.d(Constants.TAG, " Response " + response.code() + " response " + response.message());
-        articleItemsAdapter = new ArticleItemsAdapter(this, response.body().getResponse().getDocs());
-        rvList.setAdapter(articleItemsAdapter);
+
+        if(response.code() == 200 /*OK*/) {
+            List<Doc> resultToShow = response.body().getResponse().getDocs();
+            Log.d(Constants.TAG, "Response size " + resultToShow.size());
+            articleItems.addAll(resultToShow);
+            articleItemsAdapter.notifyDataSetChanged();
+            if(resultToShow.size() == 0){
+                Toast.makeText(getApplicationContext(), "No results", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "No results", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -140,7 +209,10 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
     @Override
     public void onFilterSelectedListener(SelectedFilters selectedFilters) {
         savedFilters = selectedFilters;
-        refreshData();
+        scrollListener.resetState();
+        
+        articleItems.clear();
+        refreshData(0);
     }
 
     private Boolean isNetworkAvailable() {

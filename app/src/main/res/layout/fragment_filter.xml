@@ -17,7 +17,7 @@
             android:layout_marginRight="16dp"/>
         <EditText
             android:id="@+id/etDatePicker"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"/>
     </LinearLayout>
@@ -32,9 +32,10 @@
             android:textColor="#999696"
             android:gravity="center"
             android:layout_marginRight="16dp"/>
+
         <Spinner
             android:id="@+id/spinnerSortOrder"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:entries="@array/sort_order"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"/>
@@ -57,23 +58,24 @@
             <CheckBox android:id="@+id/checkbox_arts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Arts" />
+                android:text="@string/arts" />
             <CheckBox android:id="@+id/checkbox_fashion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fashion &amp; Style" />
+                android:text="@string/fashion_amp_style" />
             <CheckBox android:id="@+id/checkbox_sports"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sports" />
+                android:text="@string/sports" />
         </LinearLayout>
     </LinearLayout>
 
     <Button
         android:layout_margin="8dp"
         android:text="Save"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnSave" />
+        android:id="@+id/btnSave"
+        android:layout_gravity="center" />
 
 </LinearLayout>
