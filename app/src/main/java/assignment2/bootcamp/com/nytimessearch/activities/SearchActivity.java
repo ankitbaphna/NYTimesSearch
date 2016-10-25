@@ -196,6 +196,7 @@ public class SearchActivity extends AppCompatActivity implements Callback<Articl
     @Override
     public void onFailure(Call<ArticleItem> call, Throwable t) {
         Log.d(Constants.TAG, "Fail " + t.getMessage());
+        refreshData(currentPage);
     }
 
     @Override
